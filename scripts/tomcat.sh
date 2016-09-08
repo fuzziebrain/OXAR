@@ -14,7 +14,7 @@ if [ -n "$(command -v yum)" ]; then
     #version. So making a copy and naming it oxar. 
     #Add `oracle-xe` to the After clause to encourage waiting for the db to be up and running
     cp /usr/lib/systemd/system/${TOMCAT_SERVICE_NAME}.service /usr/lib/systemd/system/${TOMCAT_OXAR_SERVICE_NAME}.service
-    sed -i 's/After=syslog.target network.target/After=syslog.target network.target oracle-xe.service/' /usr/lib/systemd/system/${TOMCAT_OXAR_SERVICE_NAME}.service
+    sed -i 's/After=syslog.target network.target/After=syslog.target network.target oracle-e.service/' /usr/lib/systemd/system/${TOMCAT_OXAR_SERVICE_NAME}.service
     
 
 elif [ -n "$(command -v apt-get)" ]; then
@@ -32,7 +32,10 @@ elif [ -n "$(command -v apt-get)" ]; then
     #https://wiki.debian.org/LSBInitScripts
     #See also https://refspecs.linuxbase.org/LSB_3.0.0/LSB-PDA/LSB-PDA/facilname.html
     sed -i 's/# Should-Start:      \$named/# Should-Start:      \$named oracle-xe/' /etc/init.d/${TOMCAT_OXAR_SERVICE_NAME}
+    #Also replace the script executable path
     sed -i 's/\/etc\/init\.d\/tomcat7/\/etc\/init.d\/tomcat@oxar/' /etc/init.d/${TOMCAT_OXAR_SERVICE_NAME}
+    #and the provides name to match script name
+    sed -i 's/Provides:          tomcat7/Provides:          tomcat@oxar/' /etc/init.d/${TOMCAT_OXAR_SERVICE_NAME}
     
 else
 
