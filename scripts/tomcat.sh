@@ -12,10 +12,10 @@ if [ -n "$(command -v yum)" ]; then
     
     #Modifications to tomcat service file. Recommendation is to make a copy of the `@`
     #version. So making a copy and naming it oxar. 
+    #Add `oracle-xe` to the After clause to encourage waiting for the db to be up and running
     cp /usr/lib/systemd/system/${TOMCAT_SERVICE_NAME}.service /usr/lib/systemd/system/${TOMCAT_OXAR_SERVICE_NAME}.service
     sed -i 's/After=syslog.target network.target/After=syslog.target network.target oracle-xe.service/' /usr/lib/systemd/system/${TOMCAT_OXAR_SERVICE_NAME}.service
-    #Reload systemd just in case anything is cached with this service name
-    systemctl daemon-reload
+    
 
 elif [ -n "$(command -v apt-get)" ]; then
 
@@ -25,12 +25,23 @@ elif [ -n "$(command -v apt-get)" ]; then
     TOMCAT_SERVICE_NAME=tomcat7
     TOMCAT_USER=tomcat7
     
+    #Modifications to the tomcat7 init script. For consistency, naming the same
+    #as Red Hat counter part (it uses a service file rather than init script).
+    cp /etc/init.d/${TOMCAT_SERVICE_NAME} /etc/init.d/${TOMCAT_OXAR_SERVICE_NAME}
+    #According to https://wiki.debian.org/LSBInitScripts, the `Should-Start` clause
+    #https://wiki.debian.org/LSBInitScripts
+    #See also https://refspecs.linuxbase.org/LSB_3.0.0/LSB-PDA/LSB-PDA/facilname.html
+    sed -i 's/# Should-Start:      \$named/# Should-Start:      \$named oracle-xe/' /etc/init.d/${TOMCAT_OXAR_SERVICE_NAME}
+    sed -i 's/\/etc\/init\.d\/tomcat7/\/etc\/init.d\/tomcat@oxar/' /etc/init.d/${TOMCAT_OXAR_SERVICE_NAME}
+    
 else
 
     echo; echo \* No known package manager found \* >&2
     exit 1
 fi
 
+#Reload systemd just in case anything is cached with this service name
+systemctl daemon-reload
 #Stop and dissable tomcat from sytem startup
 systemctl stop ${TOMCAT_SERVICE_NAME}
 systemctl disable ${TOMCAT_SERVICE_NAME}
