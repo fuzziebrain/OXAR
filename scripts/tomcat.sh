@@ -1,12 +1,20 @@
 #!/bin/bash
 
+TOMCAT_OXAR_SERVICE_NAME=tomcat@oxar
+
 if [ -n "$(command -v yum)" ]; then
     yum install tomcat tomcat-admin-webapps -y
 
     # Set tomcat environmental variables such as CATALINA_HOME
     . /etc/tomcat/tomcat.conf
-    TOMCAT_SERVICE_NAME=tomcat
     TOMCAT_USER=tomcat
+    TOMCAT_SERVICE_NAME=tomcat
+    
+    #Modifications to tomcat service file. Recommendation is to make a copy of the `@`
+    #version. So making a copy and naming it oxar. 
+    cp /usr/lib/systemd/system/tomcat\@.service /usr/lib/systemd/system/${TOMCAT_OXAR_SERVICE_NAME}.service
+    sed -i 's/After=syslog.target network.target/After=syslog.target network.target oracle-xe.service/' /usr/lib/systemd/system/${TOMCAT_OXAR_SERVICE_NAME}.service
+    
 
 elif [ -n "$(command -v apt-get)" ]; then
 
@@ -15,6 +23,7 @@ elif [ -n "$(command -v apt-get)" ]; then
     CATALINA_HOME=/var/lib/tomcat7
     TOMCAT_SERVICE_NAME=tomcat7
     TOMCAT_USER=tomcat7
+    
 else
 
     echo; echo \* No known package manager found \* >&2
