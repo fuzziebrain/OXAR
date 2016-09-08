@@ -14,7 +14,7 @@ if [ -n "$(command -v yum)" ]; then
     #version. So making a copy and naming it oxar. 
     #Add `oracle-xe` to the After clause to encourage waiting for the db to be up and running
     cp /usr/lib/systemd/system/${TOMCAT_SERVICE_NAME}.service /usr/lib/systemd/system/${TOMCAT_OXAR_SERVICE_NAME}.service
-    sed -i 's/After=syslog.target network.target/After=syslog.target network.target oracle-e.service/' /usr/lib/systemd/system/${TOMCAT_OXAR_SERVICE_NAME}.service
+    sed -i 's/After=syslog.target network.target/After=syslog.target network.target oracle-xe.service/' /usr/lib/systemd/system/${TOMCAT_OXAR_SERVICE_NAME}.service
     
 
 elif [ -n "$(command -v apt-get)" ]; then
