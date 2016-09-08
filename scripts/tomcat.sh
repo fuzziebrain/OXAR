@@ -12,9 +12,10 @@ if [ -n "$(command -v yum)" ]; then
     
     #Modifications to tomcat service file. Recommendation is to make a copy of the `@`
     #version. So making a copy and naming it oxar. 
-    cp /usr/lib/systemd/system/tomcat\@.service /usr/lib/systemd/system/${TOMCAT_OXAR_SERVICE_NAME}.service
+    cp /usr/lib/systemd/system/${TOMCAT_SERVICE_NAME}.service /usr/lib/systemd/system/${TOMCAT_OXAR_SERVICE_NAME}.service
     sed -i 's/After=syslog.target network.target/After=syslog.target network.target oracle-xe.service/' /usr/lib/systemd/system/${TOMCAT_OXAR_SERVICE_NAME}.service
-    
+    #Reload systemd just in case anything is cached with this service name
+    systemctl daemon-reload
 
 elif [ -n "$(command -v apt-get)" ]; then
 
@@ -30,7 +31,9 @@ else
     exit 1
 fi
 
+#Stop and dissable tomcat from sytem startup
 systemctl stop ${TOMCAT_SERVICE_NAME}
+systemctl disable ${TOMCAT_SERVICE_NAME}
 
 #Add a user into tomcat-users.xml (/etc/tomcat/tomcat-user.xml) as defined in config.properties
 perl -i -p -e "s/<tomcat-users>/<tomcat-users>\n  <\!-- Auto generated content by http\:\/\/www.github.com\/OraOpenSource\/oraclexe-apex install scripts -->\n  <role rolename=\"manager-gui\"\/>\n  <user username=\"${OOS_TOMCAT_USERNAME}\" password=\"${OOS_TOMCAT_PASSWORD}\" roles=\"manager-gui\"\/>\n  <\!-- End auto-generated content -->/g" ${CATALINA_HOME}/conf/tomcat-users.xml
@@ -43,5 +46,5 @@ cp -f ${CATALINA_HOME}/conf/server.xml ${CATALINA_HOME}/conf/server_original.xml
 # Set the preferred port
 sed -i "s/OOS_TOMCAT_SERVER_PORT/${OOS_TOMCAT_PORT}/" ${CATALINA_HOME}/conf/server.xml
 
-systemctl enable ${TOMCAT_SERVICE_NAME}
-systemctl start ${TOMCAT_SERVICE_NAME}
+systemctl enable ${TOMCAT_OXAR_SERVICE_NAME}
+systemctl start ${TOMCAT_OXAR_SERVICE_NAME}
