@@ -3,7 +3,7 @@
 To upgrade ORDS, you need to grab the latest copy of ORDS onto your server. Before starting the upgrade, it won't be a bad idea to stop Tomcat.
 
 ```bash
-sudo systemctl stop tomcat\@oxar
+sudo systemctl stop tomcat@oxar
 ```
 
 Now, assuming the version you wish to upgrade to is 3.0.4.60.12.48, and you have downloaded the file `ords.3.0.4.60.12.48.zip` onto your server, you first need to extract the files.
