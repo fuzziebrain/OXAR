@@ -78,5 +78,5 @@ Once, that upgrade process completes, you need to move `ords.war` to the Tomcat 
 
 ```bash
 sudo cp ords.war /usr/share/tomcat/webapps/
-sudo systemctl start tomcat\@oxar
+sudo systemctl start tomcat@oxar
 ```
