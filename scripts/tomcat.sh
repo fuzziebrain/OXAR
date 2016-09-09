@@ -29,6 +29,7 @@ elif [ -n "$(command -v apt-get)" ]; then
     #as Red Hat counter part (it uses a service file rather than init script).
     cp /etc/init.d/${TOMCAT_SERVICE_NAME} /etc/init.d/${TOMCAT_OXAR_SERVICE_NAME}
     #According to https://wiki.debian.org/LSBInitScripts, the `Should-Start` clause
+    #should wait for specified services to start if available.
     #https://wiki.debian.org/LSBInitScripts
     #See also https://refspecs.linuxbase.org/LSB_3.0.0/LSB-PDA/LSB-PDA/facilname.html
     sed -i 's/# Should-Start:      \$named/# Should-Start:      \$named oracle-xe/' /etc/init.d/${TOMCAT_OXAR_SERVICE_NAME}
